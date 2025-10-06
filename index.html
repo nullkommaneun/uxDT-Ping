@@ -1,36 +1,26 @@
 <!doctype html>
 <html lang="de">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="color-scheme" content="light dark" />
-<title>Ultraschall Beacon – iPad/Safari kompatibel</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<meta name="color-scheme" content="light dark"/>
+<title>Ultraschall Beacon – iPad/Safari + ID-Encoding</title>
 <style>
-  :root {
-    --bg: #0b1220; --fg:#eaf2ff; --muted:#94a3b8; --pri:#3b82f6; --ok:#16a34a; --warn:#f59e0b; --err:#ef4444; --card:#111827;
-    --pad: clamp(12px, 2.2vw, 20px); --radius: 14px; --gap: 12px;
-  }
-  @media (prefers-color-scheme: light){
-    :root { --bg:#f7fafc; --fg:#0f172a; --muted:#475569; --card:#ffffff; }
-  }
-  *{box-sizing:border-box;-webkit-tap-highlight-color: transparent;}
+  :root{--bg:#0b1220;--fg:#eaf2ff;--muted:#94a3b8;--pri:#3b82f6;--ok:#16a34a;--warn:#f59e0b;--err:#ef4444;--card:#111827;--pad:clamp(12px,2.2vw,20px);--radius:14px;--gap:12px}
+  @media (prefers-color-scheme:light){:root{--bg:#f7fafc;--fg:#0f172a;--muted:#475569;--card:#ffffff}}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.4;}
-  .wrap{max-width:880px;margin:0 auto;padding:calc(env(safe-area-inset-top) + var(--pad)) var(--pad) calc(env(safe-area-inset-bottom) + var(--pad));}
-  h1{font-size:clamp(20px,2.4vw,26px);margin:0 0 6px 0}
-  p.lead{margin:0 0 16px 0;color:var(--muted)}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.4}
+  .wrap{max-width:980px;margin:0 auto;padding:calc(env(safe-area-inset-top)+var(--pad)) var(--pad) calc(env(safe-area-inset-bottom)+var(--pad))}
+  h1{font-size:clamp(20px,2.4vw,26px);margin:0 0 6px}
+  p.lead{margin:0 0 16px;color:var(--muted)}
   .card{background:var(--card);border:1px solid #1f2937;border-radius:var(--radius);padding:var(--pad)}
   label{font-weight:600;display:block;margin-top:10px}
-  input[type="text"],input[type="number"]{
-    width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:transparent;color:inherit;font-size:16px;
-  }
+  input[type="text"],input[type="number"],select{width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:transparent;color:inherit;font-size:16px}
   .row{display:flex;gap:var(--gap);flex-wrap:wrap}
   .col{flex:1;min-width:180px}
   .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-  button{
-    appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:700;font-size:16px;cursor:pointer;
-    background:var(--pri);color:white;flex:0 0 auto;
-  }
+  button{appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:700;font-size:16px;cursor:pointer;background:var(--pri);color:#fff}
   button.secondary{background:#64748b}
   button.ghost{background:transparent;border:1px solid #334155;color:var(--fg)}
   button:disabled{opacity:.45;cursor:not-allowed}
@@ -38,20 +28,25 @@
   .status .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background:#475569}
   .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.err{background:var(--err)}
   .grid{display:grid;grid-template-columns:1fr;gap:var(--gap)}
-  @media (min-width:700px){ .grid{grid-template-columns: 1fr 1fr;} }
-  .meter {height:10px;background:#0f172a;border-radius:999px;overflow:hidden;border:1px solid #1f2937;margin-top:8px}
+  @media(min-width:840px){.grid{grid-template-columns:1fr 1fr}}
+  .meter{height:10px;background:#0f172a;border-radius:999px;overflow:hidden;border:1px solid #1f2937;margin-top:8px}
   .meter>span{display:block;height:100%;width:0%}
   .note{color:var(--muted);font-size:14px;margin-top:8px}
   footer{margin-top:18px;color:var(--muted);font-size:14px}
+  .mode-tabs{display:flex;gap:8px;margin:10px 0 4px}
+  .mode-tabs button{background:#334155}
+  .mode-tabs button.active{background:var(--pri)}
+  .small{font-size:13px;color:var(--muted)}
+  code.inline{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background:#0f172a; padding:2px 6px; border-radius:8px; border:1px solid #1f2937}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Ultraschall Beacon Tester (iPad/Safari)</h1>
-  <p class="lead">Sende kurze Bursts im Bereich 18–20&nbsp;kHz. Start erfordert eine Nutzer-Interaktion (iOS-Policy).</p>
+  <h1>Ultraschall Beacon Tester (iPad/Safari) – mit ID-Encoding</h1>
+  <p class="lead">Sende Bursts im Bereich 18–20&nbsp;kHz. Zusätzlich: Beacon-ID als Bitmuster (NRZ/Manchester) mit Preamble.</p>
 
   <div class="card" id="gate">
-    <p><strong>Schritt 1: Audio aktivieren</strong> – tippe auf den Button, damit Safari den AudioContext freigibt.</p>
+    <p><strong>Schritt 1: Audio aktivieren</strong> – tippe, damit Safari den AudioContext freigibt.</p>
     <div class="btns">
       <button id="enableAudio">🔊 Audio aktivieren</button>
       <button id="testTone" class="secondary" disabled>🧪 1 kHz Test (0,5 s)</button>
@@ -61,254 +56,378 @@
   </div>
 
   <div class="grid" style="margin-top:12px">
+    <!-- MODE: SEQUENCE (legacy) -->
     <div class="card">
-      <label for="freqs">Frequenzen (Hz), Komma-separiert</label>
-      <input id="freqs" type="text" value="19000,19500,20000" inputmode="numeric" />
-      <div class="row">
-        <div class="col">
-          <label for="duration">Burst-Dauer (ms)</label>
-          <input id="duration" type="number" value="150" min="10" />
+      <div class="mode-tabs">
+        <button id="tabSeq" class="active">Modus: Sequenz</button>
+        <button id="tabId">Modus: Beacon-ID</button>
+      </div>
+
+      <div id="panelSeq">
+        <label for="freqs">Frequenzen (Hz), Komma-separiert</label>
+        <input id="freqs" type="text" value="19000,19500,20000" inputmode="numeric"/>
+        <div class="row">
+          <div class="col">
+            <label for="duration">Burst-Dauer (ms)</label>
+            <input id="duration" type="number" value="150" min="10"/>
+          </div>
+          <div class="col">
+            <label for="gap">Pause zwischen Bursts (ms)</label>
+            <input id="gap" type="number" value="120" min="0"/>
+          </div>
         </div>
-        <div class="col">
-          <label for="gap">Pause zwischen Bursts (ms)</label>
-          <input id="gap" type="number" value="120" min="0" />
+        <div class="row">
+          <div class="col">
+            <label for="gain">Lautstärke (0.0–1.0)</label>
+            <input id="gain" type="number" step="0.01" min="0" max="1" value="0.20"/>
+          </div>
+          <div class="col">
+            <label for="repeats">Wiederholungen</label>
+            <input id="repeats" type="number" min="1" value="1"/>
+          </div>
+        </div>
+        <div class="btns">
+          <button id="playSeq" disabled>▶ Sequence</button>
+          <button id="playTone" class="secondary" disabled>▶ Einzelton (erste Frequenz)</button>
+          <button id="stop" class="ghost" disabled>■ Stop</button>
         </div>
       </div>
-      <div class="row">
-        <div class="col">
-          <label for="gain">Lautstärke (0.0–1.0)</label>
-          <input id="gain" type="number" step="0.01" min="0" max="1" value="0.20" />
+
+      <!-- MODE: ID -->
+      <div id="panelId" style="display:none">
+        <div class="row">
+          <div class="col">
+            <label for="idInput">Beacon-ID (hex, dezimal oder binär)</label>
+            <input id="idInput" type="text" value="0xA1B2" placeholder="z. B. 0xA1B2 oder 41394 oder 1010..."/>
+            <span class="small">Hex mit <code class="inline">0x</code>, Binär mit <code class="inline">0b</code>.</span>
+          </div>
+          <div class="col">
+            <label for="encoding">Encoding</label>
+            <select id="encoding">
+              <option value="manchester">Manchester (empfehlenswert)</option>
+              <option value="nrz">NRZ (ein Ton je Bit)</option>
+            </select>
+          </div>
         </div>
-        <div class="col">
-          <label for="repeats">Wiederholungen</label>
-          <input id="repeats" type="number" min="1" value="1" />
+
+        <div class="row">
+          <div class="col">
+            <label for="f0">Frequenz „0“ (Hz)</label>
+            <input id="f0" type="number" value="19000" min="100" />
+          </div>
+          <div class="col">
+            <label for="f1">Frequenz „1“ (Hz)</label>
+            <input id="f1" type="number" value="20000" min="100" />
+          </div>
         </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="symMs">Symbol-Dauer (ms)</label>
+            <input id="symMs" type="number" value="120" min="20" />
+          </div>
+          <div class="col">
+            <label for="symGap">Lücke je Symbol (ms)</label>
+            <input id="symGap" type="number" value="20" min="0" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="preambleBits">Preamble (Bitfolge)</label>
+            <input id="preambleBits" type="text" value="10101010" />
+            <span class="small">Zur Synchronisation. „1010…“ bewährt sich.</span>
+          </div>
+          <div class="col">
+            <label for="addParity">Parität anhängen</label>
+            <select id="addParity">
+              <option value="none">Keine</option>
+              <option value="even">Gerade Parität</option>
+              <option value="odd">Ungerade Parität</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="idGain">Lautstärke (0.0–1.0)</label>
+            <input id="idGain" type="number" step="0.01" min="0" max="1" value="0.20"/>
+          </div>
+          <div class="col">
+            <label for="idRepeats">Wiederholungen der gesamten ID</label>
+            <input id="idRepeats" type="number" min="1" value="3"/>
+          </div>
+        </div>
+
+        <div class="btns">
+          <button id="playId" disabled>▶ Beacon-ID senden</button>
+          <button id="stop2" class="ghost" disabled>■ Stop</button>
+        </div>
+
+        <div class="status" id="idStatus"><span class="dot"></span><span>Bereit</span></div>
+        <p class="small">Debug-Ausgabe: <code class="inline" id="dbgBits">—</code></p>
       </div>
-      <div class="btns">
-        <button id="playSeq" disabled>▶ Sequence</button>
-        <button id="playTone" class="secondary" disabled>▶ Einzelton (erste Frequenz)</button>
-        <button id="stop" class="ghost" disabled>■ Stop</button>
-      </div>
+
       <div class="status" id="status"><span class="dot"></span><span>Status: Warten auf Audio-Aktivierung</span></div>
-      <p class="note">Viele iPad-Lautsprecher filtern >18&nbsp;kHz ab. Nutze ggf. Kopfhörer oder externe Lautsprecher.</p>
+      <p class="note">Viele iPad-Lautsprecher filtern >18&nbsp;kHz ab. Externe Speaker ggf. zuverlässiger.</p>
     </div>
 
     <div class="card">
       <strong>Schnell-Check: Ausgabe-Peak</strong>
-      <p class="note">Ein einfacher Amplituden-Indikator (nicht kalibriert). Zeigt Aktivität während der Bursts.</p>
+      <p class="note">Einfacher Amplituden-Indikator (nicht kalibriert). Zeigt Aktivität während der Bursts.</p>
       <div class="meter"><span id="peakBar"></span></div>
       <div class="status" id="cap"><span class="dot"></span><span>Samplerate: unbekannt</span></div>
       <p class="note">Rechtliches: Verstecktes Tracking ohne Einwilligung ist in der EU unzulässig.</p>
     </div>
   </div>
 
-  <footer>© Test & Forschung. Keine Gewähr. Achte auf Tiere.</footer>
+  <footer>© Test & Forschung. Keine Gewähr. Achte auf Tiere und Lautstärke.</footer>
 </div>
 
 <script>
 (function(){
-  // ------- State -------
-  let ctx = null, analyser = null, meterRAF = 0;
-  let active = false, stopFlag = false;
-  let playing = [];
+  // ===== Audio Core =====
+  let ctx=null, analyser=null, meterRAF=0;
+  let playing=[], stopFlag=false;
 
-  // ------- Helpers -------
-  const $ = id => document.getElementById(id);
-  const setStatus = (el, text, cls) => {
-    const dot = el.querySelector('.dot');
-    const span = el.querySelector('span:last-child');
-    dot.className = 'dot ' + (cls || '');
-    span.textContent = text;
-  };
-  const enableButtons = (on) => {
-    ['playSeq','playTone','stop'].forEach(id => $(id).disabled = !on);
-  };
+  const $=id=>document.getElementById(id);
+  const setStatus=(el,text,cls)=>{const dot=el.querySelector('.dot');const span=el.querySelector('span:last-child');dot.className='dot '+(cls||'');span.textContent=text;}
+  const enableSeqBtns=(on)=>{['playSeq','playTone','stop'].forEach(id=>$(id).disabled=!on)}
+  const enableIdBtns=(on)=>{['playId','stop2'].forEach(id=>$(id).disabled=!on)}
 
   function ensureCtx(){
-    if (!ctx || ctx.state === 'closed'){
-      const AC = window.AudioContext || window.webkitAudioContext;
-      ctx = new AC({ latencyHint: 'interactive' });
-      analyser = ctx.createAnalyser();
-      analyser.fftSize = 2048;
-      // keep an always-connected analyser to destination for metering
-      const meterGain = ctx.createGain();
-      meterGain.gain.value = 0.0; // mute path (we only tap the waveform)
-      meterGain.connect(ctx.destination);
-      analyser.connect(meterGain);
+    if(!ctx||ctx.state==='closed'){
+      const AC=window.AudioContext||window.webkitAudioContext;
+      ctx=new AC({latencyHint:'interactive'});
+      analyser=ctx.createAnalyser();
+      analyser.fftSize=2048;
+      const meterGain=ctx.createGain(); meterGain.gain.value=0.0;
+      analyser.connect(meterGain); meterGain.connect(ctx.destination);
     }
     return ctx;
   }
 
-  // Safe oscillator + gain with click-free ramps
   function makeVoice(freq, gainVal){
-    const c = ensureCtx();
-    const osc = c.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.value = freq;
-    const g = c.createGain();
-    // Start silent, quick exponential attack
-    g.gain.setValueAtTime(0.0001, c.currentTime);
-    // routing
+    const c=ensureCtx();
+    const osc=c.createOscillator(); osc.type='sine'; osc.frequency.value=freq;
+    const g=c.createGain(); g.gain.setValueAtTime(0.0001,c.currentTime);
     osc.connect(g);
-    // tee to analyser for metering
-    const tee = c.createGain(); tee.gain.value = 1.0;
-    g.connect(tee);
-    tee.connect(analyser);
+    const tee=c.createGain(); tee.gain.value=1.0;
+    g.connect(tee); tee.connect(analyser);
     g.connect(c.destination);
-    return { osc, gain: g };
+    return {osc,gain:g};
   }
 
   async function playBurst(freq, ms, vol){
-    stopFlag = false;
-    const c = ensureCtx();
-    await c.resume();
-    const voice = makeVoice(freq, vol);
-    playing.push(voice);
-    const now = c.currentTime;
-    voice.gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, vol), now + 0.012);
-    voice.osc.start(now);
-    const stopAt = now + ms/1000;
-    voice.gain.gain.exponentialRampToValueAtTime(0.0001, stopAt + 0.012);
-    // schedule stop
-    setTimeout(() => {
-      try { voice.osc.stop(); } catch(e){}
-      playing = playing.filter(v => v !== voice);
-    }, ms + 40);
-  }
-
-  async function playSequence(freqs, ms, gap, vol, reps){
-    const c = ensureCtx();
-    await c.resume();
-    active = true; stopFlag = false;
-    setStatus($('status'), 'Sequence läuft …', 'ok');
-    $('stop').disabled = false;
-
-    for (let r=0; r<reps; r++){
-      for (let i=0;i<freqs.length;i++){
-        if (stopFlag){ active=false; setStatus($('status'),'Gestoppt','warn'); return; }
-        await playBurst(freqs[i], ms, vol);
-        await new Promise(res => setTimeout(res, ms + gap));
-      }
-      if (r < reps-1) await new Promise(res => setTimeout(res, 200));
-    }
-    active = false;
-    setStatus($('status'), 'Fertig', 'ok');
-    $('stop').disabled = true;
-  }
-
-  function playContinuous(freq, vol){
-    stopFlag = false;
-    const c = ensureCtx();
-    c.resume().then(()=>{
-      const voice = makeVoice(freq, vol);
-      playing.push(voice);
-      const now = c.currentTime;
-      voice.gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, vol), now + 0.012);
-      voice.osc.start(now);
-      setStatus($('status'), 'Einzelton aktiv: ' + Math.round(freq) + ' Hz', 'ok');
-      $('stop').disabled = false;
+    const c=ensureCtx(); await c.resume();
+    const v=makeVoice(freq,vol); playing.push(v);
+    const now=c.currentTime;
+    v.gain.gain.exponentialRampToValueAtTime(Math.max(0.0001,vol), now+0.012);
+    v.osc.start(now);
+    const stopAt=now+ms/1000;
+    v.gain.gain.exponentialRampToValueAtTime(0.0001, stopAt+0.012);
+    return new Promise(res=>{
+      setTimeout(()=>{try{v.osc.stop()}catch(e){} playing=playing.filter(x=>x!==v); res();}, ms+40);
     });
   }
 
   function stopAll(){
-    stopFlag = true;
-    const c = ensureCtx();
-    const now = c.currentTime;
-    playing.forEach(v=>{
-      try {
-        v.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
-        setTimeout(()=>{ try{ v.osc.stop(); }catch(e){} }, 30);
-      } catch(e){}
-    });
-    playing = [];
-    active = false;
-    setStatus($('status'), 'Gestoppt', 'warn');
-    $('stop').disabled = true;
+    stopFlag=true;
+    if(!ctx) return;
+    const now=ctx.currentTime;
+    playing.forEach(v=>{try{v.gain.gain.exponentialRampToValueAtTime(0.0001, now+0.02); setTimeout(()=>{try{v.osc.stop()}catch(e){}},30);}catch(e){}});
+    playing=[];
   }
 
-  // Simple peak meter from analyser
   function startMeter(){
     cancelAnimationFrame(meterRAF);
-    const buf = new Uint8Array(analyser.fftSize);
-    const bar = $('peakBar');
-    function tick(){
-      if (analyser){
-        analyser.getByteTimeDomainData(buf);
-        // compute peak (0..1)
-        let peak = 0;
-        for (let i=0;i<buf.length;i++){
-          const v = (buf[i]-128)/128;
-          const a = Math.abs(v);
-          if (a>peak) peak=a;
-        }
-        const pct = Math.min(100, Math.max(0, Math.round(peak*100)));
-        bar.style.width = pct + '%';
-        bar.style.background = peak>0.15 ? '#16a34a' : (peak>0.05 ? '#f59e0b' : '#334155');
-      }
-      meterRAF = requestAnimationFrame(tick);
-    }
-    tick();
+    const buf=new Uint8Array(analyser.fftSize); const bar=$('peakBar');
+    const tick=()=>{if(analyser){analyser.getByteTimeDomainData(buf);let peak=0;for(let i=0;i<buf.length;i++){const a=Math.abs((buf[i]-128)/128); if(a>peak) peak=a;}
+      const pct=Math.min(100,Math.max(0,Math.round(peak*100))); bar.style.width=pct+'%';
+      bar.style.background=peak>0.15?'#16a34a':(peak>0.05?'#f59e0b':'#334155');}
+      meterRAF=requestAnimationFrame(tick);
+    }; tick();
   }
 
-  // ------- UI -------
-  const gateBtn = $('enableAudio');
-  const testBtn = $('testTone');
+  // ===== Sequenz-Modus =====
+  async function playSequence(freqs, dur, gap, vol, reps){
+    stopFlag=false; setStatus($('status'),'Sequence läuft …','ok'); $('stop').disabled=false;
+    for(let r=0;r<reps;r++){
+      for(let i=0;i<freqs.length;i++){
+        if(stopFlag){ setStatus($('status'),'Gestoppt','warn'); $('stop').disabled=true; return;}
+        await playBurst(freqs[i], dur, vol);
+        await new Promise(res=>setTimeout(res, gap));
+      }
+      if(r<reps-1) await new Promise(res=>setTimeout(res, 200));
+    }
+    setStatus($('status'),'Fertig','ok'); $('stop').disabled=true;
+  }
+
+  // ===== ID-Encoding =====
+  function parseIdToBits(str){
+    const s=str.trim();
+    if(!s) return [];
+    let bits=[];
+    if(/^0b[01]+$/i.test(s)){ // binary
+      const b=s.slice(2);
+      bits=b.split('').map(ch=>ch==='1'?1:0);
+    } else if(/^0x[0-9a-f]+$/i.test(s)){ // hex
+      const hex=s.slice(2);
+      bits=[...hex].map(h=>parseInt(h,16).toString(2).padStart(4,'0')).join('').split('').map(c=>c==='1'?1:0);
+    } else if(/^\d+$/.test(s)){ // decimal
+      let n=BigInt(s);
+      if(n===0n) return [0];
+      while(n>0n){bits.push(Number(n&1n)); n>>=1n;}
+      bits.reverse();
+    } else {
+      // Fallback: treat as raw bitstring with separators
+      bits=s.replace(/[^01]/g,'').split('').map(c=>c==='1'?1:0);
+    }
+    return bits;
+  }
+
+  function parityBit(bits, mode){
+    if(mode==='none') return null;
+    const ones=bits.reduce((a,b)=>a+(b?1:0),0);
+    if(mode==='even'){ return (ones%2===0)?0:1; }
+    if(mode==='odd'){ return (ones%2===0)?1:0; }
+    return null;
+  }
+
+  function manchesterEncode(bits){
+    // IEEE 802.3: 0 -> low->high, 1 -> high->low. Wir mappen auf F0/F1 Sequenzen.
+    // Jede Bitperiode besteht aus zwei Halbperioden.
+    const out=[];
+    bits.forEach(b=>{
+      if(b===0){ out.push(0,1); } else { out.push(1,0); }
+    });
+    return out; // Symbole: 2 pro Bit
+  }
+
+  async function playIdFrame(params){
+    const {
+      idStr, encoding, f0, f1, symMs, symGap, preambleBits, parityMode, gain, repeats
+    } = params;
+
+    const idBits=parseIdToBits(idStr);
+    if(idBits.length===0) throw new Error('Ungültige ID');
+    const pb=(preambleBits||'').replace(/[^01]/g,'').split('').map(c=>c==='1'?1:0);
+    const pbit=parityBit(idBits, parityMode);
+    const payload = (pbit===null)? idBits : idBits.concat([pbit]);
+
+    // Compose full bitstream (preamble + payload)
+    const bitstream = pb.concat(payload);
+
+    // Map to symbol sequence
+    let symbols=[];
+    if(encoding==='manchester'){
+      symbols = manchesterEncode(bitstream); // 0-> [0,1], 1-> [1,0]
+    } else {
+      symbols = bitstream.slice(); // NRZ: 1 Symbol pro Bit (0/1)
+    }
+
+    // Debug render
+    $('dbgBits').textContent = `${encoding.toUpperCase()}  |  PRE: ${pb.join('')}  |  ID: ${idBits.join('')}${pbit!==null?(' P='+pbit):''}  |  SYM: ${symbols.join('')}`.slice(0,500);
+
+    // Playback (0->f0, 1->f1)
+    setStatus($('idStatus'),'Sende Beacon-ID …','ok'); $('stop2').disabled=false;
+    stopFlag=false;
+    for(let r=0;r<repeats;r++){
+      for(let i=0;i<symbols.length;i++){
+        if(stopFlag){ setStatus($('idStatus'),'Gestoppt','warn'); $('stop2').disabled=true; return; }
+        const freq = symbols[i]===1 ? f1 : f0;
+        await playBurst(freq, symMs, gain);
+        if(symGap>0) await new Promise(res=>setTimeout(res, symGap));
+      }
+      if(r<repeats-1) await new Promise(res=>setTimeout(res, 300));
+    }
+    setStatus($('idStatus'),'Fertig','ok'); $('stop2').disabled=true;
+  }
+
+  // ===== UI Wiring =====
+  const gateBtn=$('enableAudio'), testBtn=$('testTone');
 
   async function unlockAudio(){
     try{
-      const c = ensureCtx();
-      await c.resume();
-      // iOS: erneut auf Touch-Events reagieren, um Resume zu sichern
+      const c=ensureCtx(); await c.resume();
       ['touchstart','pointerdown','mousedown','keydown'].forEach(ev=>{
-        window.addEventListener(ev, ()=>{ if (ctx && ctx.state === 'suspended') ctx.resume(); }, {passive:true});
+        window.addEventListener(ev,()=>{ if(ctx&&ctx.state==='suspended') ctx.resume(); },{passive:true});
       });
-      // report capability
-      const sr = c.sampleRate; // häufig 48000
-      setStatus($('gateStatus'), 'Audio freigegeben – Samplerate: '+sr+' Hz', 'ok');
-      setStatus($('status'), 'Bereit', 'ok');
-      setStatus($('cap'), 'Samplerate: '+sr+' Hz', 'ok');
+      const sr=c.sampleRate;
+      setStatus($('gateStatus'),'Audio freigegeben – Samplerate: '+sr+' Hz','ok');
+      setStatus($('status'),'Bereit','ok');
+      setStatus($('cap'),'Samplerate: '+sr+' Hz','ok');
       startMeter();
-      enableButtons(true);
-      testBtn.disabled = false;
-      $('stop').disabled = true;
-    }catch(e){
-      setStatus($('gateStatus'), 'Fehler: ' + e.message, 'err');
-    }
+      enableSeqBtns(true); enableIdBtns(true);
+      testBtn.disabled=false; $('stop').disabled=true; $('stop2').disabled=true;
+    }catch(e){ setStatus($('gateStatus'),'Fehler: '+e.message,'err'); }
   }
-
   gateBtn.addEventListener('click', unlockAudio);
 
-  testBtn.addEventListener('click', async ()=>{
-    const c = ensureCtx();
-    await c.resume();
-    // 1 kHz / 0.5 s bei moderater Lautstärke – gut hörbar, um die Kette zu prüfen
-    await playBurst(1000, 500, 0.2);
-  });
+  testBtn.addEventListener('click', async()=>{ await playBurst(1000,500,0.2); });
 
-  $('playSeq').addEventListener('click', async ()=>{
-    const freqs = $('freqs').value.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)&&n>0);
-    const dur = Math.max(10, parseInt($('duration').value)||150);
-    const gap = Math.max(0, parseInt($('gap').value)||120);
-    const vol = Math.min(1, Math.max(0, parseFloat($('gain').value)||0.2));
-    const reps = Math.max(1, parseInt($('repeats').value)||1);
-    if (!freqs.length){ setStatus($('status'),'Keine Frequenzen angegeben','err'); return; }
-    await playSequence(freqs, dur, gap, vol, reps);
-  });
+  // Tabs
+  const tabSeq=$('tabSeq'), tabId=$('tabId'), panelSeq=$('panelSeq'), panelId=$('panelId');
+  function setMode(mode){
+    const seq=mode==='seq';
+    tabSeq.classList.toggle('active',seq); tabId.classList.toggle('active',!seq);
+    panelSeq.style.display=seq?'block':'none';
+    panelId.style.display=!seq?'block':'none';
+  }
+  tabSeq.addEventListener('click',()=>setMode('seq'));
+  tabId.addEventListener('click',()=>setMode('id'));
 
+  // Sequenz Buttons
+  $('playSeq').addEventListener('click', async()=>{
+    const freqs=$('freqs').value.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)&&n>0);
+    const dur=Math.max(10,parseInt($('duration').value)||150);
+    const gap=Math.max(0,parseInt($('gap').value)||120);
+    const vol=Math.min(1,Math.max(0,parseFloat($('gain').value)||0.2));
+    const reps=Math.max(1,parseInt($('repeats').value)||1);
+    if(!freqs.length){ setStatus($('status'),'Keine Frequenzen angegeben','err'); return; }
+    await playSequence(freqs,dur,gap,vol,reps);
+  });
   $('playTone').addEventListener('click', ()=>{
-    const freqs = $('freqs').value.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)&&n>0);
-    if (!freqs.length){ setStatus($('status'),'Keine Frequenzen angegeben','err'); return; }
-    const vol = Math.min(1, Math.max(0, parseFloat($('gain').value)||0.2));
-    playContinuous(freqs[0], vol);
+    const freqs=$('freqs').value.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)&&n>0);
+    if(!freqs.length){ setStatus($('status'),'Keine Frequenzen angegeben','err'); return; }
+    const vol=Math.min(1,Math.max(0,parseFloat($('gain').value)||0.2));
+    // kontinuierlicher Ton: solange bis Stop
+    const v=makeVoice(freqs[0],vol); playing.push(v);
+    const now=ensureCtx().currentTime;
+    v.gain.gain.exponentialRampToValueAtTime(Math.max(0.0001,vol), now+0.012);
+    v.osc.start(now);
+    setStatus($('status'),'Einzelton aktiv: '+Math.round(freqs[0])+' Hz','ok');
+    $('stop').disabled=false;
   });
+  $('stop').addEventListener('click',()=>{ stopAll(); setStatus($('status'),'Gestoppt','warn'); $('stop').disabled=true; });
 
-  $('stop').addEventListener('click', stopAll);
+  // ID Buttons
+  $('playId').addEventListener('click', async()=>{
+    try{
+      const params={
+        idStr: $('idInput').value,
+        encoding: $('encoding').value,
+        f0: Math.max(100, parseFloat($('f0').value)||19000),
+        f1: Math.max(100, parseFloat($('f1').value)||20000),
+        symMs: Math.max(20, parseInt($('symMs').value)||120),
+        symGap: Math.max(0, parseInt($('symGap').value)||20),
+        preambleBits: $('preambleBits').value || '',
+        parityMode: $('addParity').value, // none/even/odd
+        gain: Math.min(1, Math.max(0, parseFloat($('idGain').value)||0.2)),
+        repeats: Math.max(1, parseInt($('idRepeats').value)||3),
+      };
+      await playIdFrame(params);
+    }catch(e){
+      console.error(e);
+      setStatus($('idStatus'),'Fehler: '+(e.message||'Unbekannt'),'err');
+    }
+  });
+  $('stop2').addEventListener('click',()=>{ stopAll(); setStatus($('idStatus'),'Gestoppt','warn'); $('stop2').disabled=true; });
 
-  // Defensive: Jede Interaktion versucht erneut zu resumen (iOS Safari Eigenheiten)
+  // Defensive re-resume (iOS)
   ['touchstart','pointerdown'].forEach(ev=>{
-    window.addEventListener(ev, ()=>{ if (ctx && ctx.state === 'suspended') ctx.resume(); }, {passive:true});
+    window.addEventListener(ev,()=>{ if(ctx&&ctx.state==='suspended') ctx.resume(); },{passive:true});
   });
-
 })();
 </script>
 </body>
