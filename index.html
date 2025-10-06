@@ -2,186 +2,312 @@
 <html lang="de">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Ultraschall Beacon Tester</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<title>Ultraschall Beacon – iPad/Safari kompatibel</title>
 <style>
-  body{font-family:Inter,Segoe UI,Arial;max-width:800px;margin:32px auto;padding:16px;color:#111}
-  h1{font-size:1.4rem;margin-bottom:0.25rem}
-  p.lead{margin-top:0;color:#444}
-  label{display:block;margin-top:12px;font-weight:600}
-  input[type="text"], input[type="number"], select{width:100%;padding:8px;margin-top:6px;border:1px solid #ccc;border-radius:6px}
-  .row{display:flex;gap:12px}
-  .col{flex:1}
-  button{margin-top:12px;padding:10px 14px;border-radius:8px;border:0;background:#1f7bd3;color:#fff;font-weight:700;cursor:pointer}
-  button.secondary{background:#6c757d}
-  .status{margin-top:12px;padding:8px;border-radius:6px;background:#f1f5f9;color:#0b3b66}
-  small.warn{display:block;margin-top:8px;color:#8a1f1f}
-  footer{margin-top:18px;color:#666;font-size:0.9rem}
+  :root {
+    --bg: #0b1220; --fg:#eaf2ff; --muted:#94a3b8; --pri:#3b82f6; --ok:#16a34a; --warn:#f59e0b; --err:#ef4444; --card:#111827;
+    --pad: clamp(12px, 2.2vw, 20px); --radius: 14px; --gap: 12px;
+  }
+  @media (prefers-color-scheme: light){
+    :root { --bg:#f7fafc; --fg:#0f172a; --muted:#475569; --card:#ffffff; }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color: transparent;}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;line-height:1.4;}
+  .wrap{max-width:880px;margin:0 auto;padding:calc(env(safe-area-inset-top) + var(--pad)) var(--pad) calc(env(safe-area-inset-bottom) + var(--pad));}
+  h1{font-size:clamp(20px,2.4vw,26px);margin:0 0 6px 0}
+  p.lead{margin:0 0 16px 0;color:var(--muted)}
+  .card{background:var(--card);border:1px solid #1f2937;border-radius:var(--radius);padding:var(--pad)}
+  label{font-weight:600;display:block;margin-top:10px}
+  input[type="text"],input[type="number"]{
+    width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:transparent;color:inherit;font-size:16px;
+  }
+  .row{display:flex;gap:var(--gap);flex-wrap:wrap}
+  .col{flex:1;min-width:180px}
+  .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  button{
+    appearance:none;border:0;border-radius:12px;padding:12px 16px;font-weight:700;font-size:16px;cursor:pointer;
+    background:var(--pri);color:white;flex:0 0 auto;
+  }
+  button.secondary{background:#64748b}
+  button.ghost{background:transparent;border:1px solid #334155;color:var(--fg)}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .status{margin-top:12px;padding:10px;border-radius:10px;background:#0b1220;border:1px solid #1f2937}
+  .status .dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;background:#475569}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)} .dot.err{background:var(--err)}
+  .grid{display:grid;grid-template-columns:1fr;gap:var(--gap)}
+  @media (min-width:700px){ .grid{grid-template-columns: 1fr 1fr;} }
+  .meter {height:10px;background:#0f172a;border-radius:999px;overflow:hidden;border:1px solid #1f2937;margin-top:8px}
+  .meter>span{display:block;height:100%;width:0%}
+  .note{color:var(--muted);font-size:14px;margin-top:8px}
+  footer{margin-top:18px;color:var(--muted);font-size:14px}
 </style>
 </head>
 <body>
-  <h1>Ultraschall-Beacon Tester</h1>
-  <p class="lead">Playbook zum Aussenden kurzer Ultraschall-Bursts. Nur für Tests & Forschung verwenden.</p>
+<div class="wrap">
+  <h1>Ultraschall Beacon Tester (iPad/Safari)</h1>
+  <p class="lead">Sende kurze Bursts im Bereich 18–20&nbsp;kHz. Start erfordert eine Nutzer-Interaktion (iOS-Policy).</p>
 
-  <label for="freqs">Frequenzen (Hz), Komma-separiert</label>
-  <input id="freqs" type="text" value="19000,19500,20000" />
-
-  <div class="row">
-    <div class="col">
-      <label for="duration">Burst Dauer (ms)</label>
-      <input id="duration" type="number" value="150" min="10" />
+  <div class="card" id="gate">
+    <p><strong>Schritt 1: Audio aktivieren</strong> – tippe auf den Button, damit Safari den AudioContext freigibt.</p>
+    <div class="btns">
+      <button id="enableAudio">🔊 Audio aktivieren</button>
+      <button id="testTone" class="secondary" disabled>🧪 1 kHz Test (0,5 s)</button>
     </div>
-    <div class="col">
-      <label for="gap">Pause zwischen Bursts (ms)</label>
-      <input id="gap" type="number" value="120" min="0" />
+    <div class="status" id="gateStatus"><span class="dot"></span><span>Bereit.</span></div>
+    <p class="note">Falls nichts zu hören ist: Systemlautstärke prüfen, Stumm-Schalter aus, kein Bluetooth-Audio aktiv.</p>
+  </div>
+
+  <div class="grid" style="margin-top:12px">
+    <div class="card">
+      <label for="freqs">Frequenzen (Hz), Komma-separiert</label>
+      <input id="freqs" type="text" value="19000,19500,20000" inputmode="numeric" />
+      <div class="row">
+        <div class="col">
+          <label for="duration">Burst-Dauer (ms)</label>
+          <input id="duration" type="number" value="150" min="10" />
+        </div>
+        <div class="col">
+          <label for="gap">Pause zwischen Bursts (ms)</label>
+          <input id="gap" type="number" value="120" min="0" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <label for="gain">Lautstärke (0.0–1.0)</label>
+          <input id="gain" type="number" step="0.01" min="0" max="1" value="0.20" />
+        </div>
+        <div class="col">
+          <label for="repeats">Wiederholungen</label>
+          <input id="repeats" type="number" min="1" value="1" />
+        </div>
+      </div>
+      <div class="btns">
+        <button id="playSeq" disabled>▶ Sequence</button>
+        <button id="playTone" class="secondary" disabled>▶ Einzelton (erste Frequenz)</button>
+        <button id="stop" class="ghost" disabled>■ Stop</button>
+      </div>
+      <div class="status" id="status"><span class="dot"></span><span>Status: Warten auf Audio-Aktivierung</span></div>
+      <p class="note">Viele iPad-Lautsprecher filtern >18&nbsp;kHz ab. Nutze ggf. Kopfhörer oder externe Lautsprecher.</p>
+    </div>
+
+    <div class="card">
+      <strong>Schnell-Check: Ausgabe-Peak</strong>
+      <p class="note">Ein einfacher Amplituden-Indikator (nicht kalibriert). Zeigt Aktivität während der Bursts.</p>
+      <div class="meter"><span id="peakBar"></span></div>
+      <div class="status" id="cap"><span class="dot"></span><span>Samplerate: unbekannt</span></div>
+      <p class="note">Rechtliches: Verstecktes Tracking ohne Einwilligung ist in der EU unzulässig.</p>
     </div>
   </div>
 
-  <label for="gain">Lautstärke (0.0 - 1.0)</label>
-  <input id="gain" type="number" step="0.01" min="0" max="1" value="0.25" />
-
-  <label for="repeats">Wiederholungen</label>
-  <input id="repeats" type="number" min="1" value="1" />
-
-  <div style="display:flex;gap:8px;margin-top:12px">
-    <button id="playSeq">▶ Play Sequence</button>
-    <button id="playTone" class="secondary">▶ Play Einzelton</button>
-    <button id="stop" class="secondary">■ Stop</button>
-  </div>
-
-  <div id="status" class="status">Status: Bereit</div>
-  <small class="warn">Hinweis: Manche Geräte filtern >18 kHz; teste zuerst kurz und achte auf Tiere.</small>
-
-  <footer>
-    Diese Seite erzeugt sinusförmige Töne via WebAudio API. Nur lokal ausführen. Für erweiterte Muster/ID-Codierung kann ich das Pattern automatisch erstellen.
-  </footer>
+  <footer>© Test & Forschung. Keine Gewähr. Achte auf Tiere.</footer>
+</div>
 
 <script>
-(() => {
-  let ctx = null;
-  let playingOscillators = [];
-  let stopRequested = false;
+(function(){
+  // ------- State -------
+  let ctx = null, analyser = null, meterRAF = 0;
+  let active = false, stopFlag = false;
+  let playing = [];
 
+  // ------- Helpers -------
   const $ = id => document.getElementById(id);
-  const status = txt => { $('status').textContent = 'Status: ' + txt; };
+  const setStatus = (el, text, cls) => {
+    const dot = el.querySelector('.dot');
+    const span = el.querySelector('span:last-child');
+    dot.className = 'dot ' + (cls || '');
+    span.textContent = text;
+  };
+  const enableButtons = (on) => {
+    ['playSeq','playTone','stop'].forEach(id => $(id).disabled = !on);
+  };
 
-  function ensureCtx() {
-    if (!ctx || ctx.state === 'closed') {
-      ctx = new (window.AudioContext || window.webkitAudioContext)();
+  function ensureCtx(){
+    if (!ctx || ctx.state === 'closed'){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      ctx = new AC({ latencyHint: 'interactive' });
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 2048;
+      // keep an always-connected analyser to destination for metering
+      const meterGain = ctx.createGain();
+      meterGain.gain.value = 0.0; // mute path (we only tap the waveform)
+      meterGain.connect(ctx.destination);
+      analyser.connect(meterGain);
     }
     return ctx;
   }
 
-  // Safe ramp to avoid clicks
-  function createOsc(freq, gainVal) {
+  // Safe oscillator + gain with click-free ramps
+  function makeVoice(freq, gainVal){
     const c = ensureCtx();
-    const o = c.createOscillator();
+    const osc = c.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.value = freq;
     const g = c.createGain();
-    o.type = 'sine';
-    o.frequency.value = freq;
+    // Start silent, quick exponential attack
     g.gain.setValueAtTime(0.0001, c.currentTime);
-    o.connect(g);
+    // routing
+    osc.connect(g);
+    // tee to analyser for metering
+    const tee = c.createGain(); tee.gain.value = 1.0;
+    g.connect(tee);
+    tee.connect(analyser);
     g.connect(c.destination);
-    return {osc: o, gain: g};
+    return { osc, gain: g };
   }
 
-  async function playBurst(freq, durationMs, gainVal) {
-    stopRequested = false;
+  async function playBurst(freq, ms, vol){
+    stopFlag = false;
     const c = ensureCtx();
     await c.resume();
-    const {osc, gain} = createOsc(freq, gainVal);
-    playingOscillators.push({osc,gain});
+    const voice = makeVoice(freq, vol);
+    playing.push(voice);
     const now = c.currentTime;
-    // attack
-    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, gainVal), now + 0.01);
-    osc.start(now);
-    const stopTime = now + durationMs/1000;
-    // release quickly
-    gain.gain.exponentialRampToValueAtTime(0.0001, stopTime + 0.01);
-    setTimeout(()=> {
-      try { osc.stop(); } catch(e){}
-      // remove from list
-      playingOscillators = playingOscillators.filter(x => x.osc !== osc);
-    }, durationMs + 40);
+    voice.gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, vol), now + 0.012);
+    voice.osc.start(now);
+    const stopAt = now + ms/1000;
+    voice.gain.gain.exponentialRampToValueAtTime(0.0001, stopAt + 0.012);
+    // schedule stop
+    setTimeout(() => {
+      try { voice.osc.stop(); } catch(e){}
+      playing = playing.filter(v => v !== voice);
+    }, ms + 40);
   }
 
-  async function playSequence(freqArray, durationMs, gapMs, gainVal, repeats=1) {
-    stopRequested = false;
+  async function playSequence(freqs, ms, gap, vol, reps){
     const c = ensureCtx();
     await c.resume();
-    status('Sequence läuft');
-    for (let r=0; r<repeats; r++) {
-      for (let i=0;i<freqArray.length;i++) {
-        if (stopRequested) { status('Gestoppt'); return; }
-        await playBurst(freqArray[i], durationMs, gainVal);
-        // wait duration + gap (but since playBurst uses setTimeout for stop, we await the duration here)
-        await new Promise(res => setTimeout(res, durationMs + gapMs));
+    active = true; stopFlag = false;
+    setStatus($('status'), 'Sequence läuft …', 'ok');
+    $('stop').disabled = false;
+
+    for (let r=0; r<reps; r++){
+      for (let i=0;i<freqs.length;i++){
+        if (stopFlag){ active=false; setStatus($('status'),'Gestoppt','warn'); return; }
+        await playBurst(freqs[i], ms, vol);
+        await new Promise(res => setTimeout(res, ms + gap));
       }
-      // small gap between repeats
-      if (r < repeats-1) await new Promise(res => setTimeout(res, 200));
+      if (r < reps-1) await new Promise(res => setTimeout(res, 200));
     }
-    status('Fertig');
+    active = false;
+    setStatus($('status'), 'Fertig', 'ok');
+    $('stop').disabled = true;
   }
 
-  // Single continuous tone for quick check
-  function playContinuous(freq, gainVal) {
-    stopRequested = false;
+  function playContinuous(freq, vol){
+    stopFlag = false;
     const c = ensureCtx();
     c.resume().then(()=>{
-      const {osc,gain} = createOsc(freq, gainVal);
-      playingOscillators.push({osc,gain});
+      const voice = makeVoice(freq, vol);
+      playing.push(voice);
       const now = c.currentTime;
-      gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, gainVal), now + 0.01);
-      osc.start();
-      status('Einzelton läuft: ' + Math.round(freq) + ' Hz');
-    }).catch(e => status('Audio start failed'));
+      voice.gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, vol), now + 0.012);
+      voice.osc.start(now);
+      setStatus($('status'), 'Einzelton aktiv: ' + Math.round(freq) + ' Hz', 'ok');
+      $('stop').disabled = false;
+    });
   }
 
-  function stopAll() {
-    stopRequested = true;
-    playingOscillators.forEach(({osc,gain})=>{
+  function stopAll(){
+    stopFlag = true;
+    const c = ensureCtx();
+    const now = c.currentTime;
+    playing.forEach(v=>{
       try {
-        const c = ensureCtx();
-        const now = c.currentTime;
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.01);
-        setTimeout(()=>{ try{osc.stop()}catch(e){} }, 30);
+        v.gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
+        setTimeout(()=>{ try{ v.osc.stop(); }catch(e){} }, 30);
       } catch(e){}
     });
-    playingOscillators = [];
-    status('Gestoppt');
-    // do NOT close context immediately; allow replay. If you want to fully close:
-    // if (ctx) ctx.close();
+    playing = [];
+    active = false;
+    setStatus($('status'), 'Gestoppt', 'warn');
+    $('stop').disabled = true;
   }
 
-  // UI hooks
-  $('playSeq').addEventListener('click', async ()=>{
-    const freqs = $('freqs').value.split(',').map(s=>parseFloat(s.trim())).filter(Boolean);
-    const dur = Math.max(10, parseInt($('duration').value) || 150);
-    const gap = Math.max(0, parseInt($('gap').value) || 120);
-    const gain = Math.min(1, Math.max(0, parseFloat($('gain').value) || 0.25));
-    const reps = Math.max(1, parseInt($('repeats').value) || 1);
-
-    if (!freqs.length) { status('Keine Frequenzen eingegeben'); return; }
-    // user gesture already triggered the click -> resume will work
-    try {
-      await playSequence(freqs, dur, gap, gain, reps);
-    } catch(e){
-      console.error(e);
-      status('Fehler beim Abspielen');
+  // Simple peak meter from analyser
+  function startMeter(){
+    cancelAnimationFrame(meterRAF);
+    const buf = new Uint8Array(analyser.fftSize);
+    const bar = $('peakBar');
+    function tick(){
+      if (analyser){
+        analyser.getByteTimeDomainData(buf);
+        // compute peak (0..1)
+        let peak = 0;
+        for (let i=0;i<buf.length;i++){
+          const v = (buf[i]-128)/128;
+          const a = Math.abs(v);
+          if (a>peak) peak=a;
+        }
+        const pct = Math.min(100, Math.max(0, Math.round(peak*100)));
+        bar.style.width = pct + '%';
+        bar.style.background = peak>0.15 ? '#16a34a' : (peak>0.05 ? '#f59e0b' : '#334155');
+      }
+      meterRAF = requestAnimationFrame(tick);
     }
+    tick();
+  }
+
+  // ------- UI -------
+  const gateBtn = $('enableAudio');
+  const testBtn = $('testTone');
+
+  async function unlockAudio(){
+    try{
+      const c = ensureCtx();
+      await c.resume();
+      // iOS: erneut auf Touch-Events reagieren, um Resume zu sichern
+      ['touchstart','pointerdown','mousedown','keydown'].forEach(ev=>{
+        window.addEventListener(ev, ()=>{ if (ctx && ctx.state === 'suspended') ctx.resume(); }, {passive:true});
+      });
+      // report capability
+      const sr = c.sampleRate; // häufig 48000
+      setStatus($('gateStatus'), 'Audio freigegeben – Samplerate: '+sr+' Hz', 'ok');
+      setStatus($('status'), 'Bereit', 'ok');
+      setStatus($('cap'), 'Samplerate: '+sr+' Hz', 'ok');
+      startMeter();
+      enableButtons(true);
+      testBtn.disabled = false;
+      $('stop').disabled = true;
+    }catch(e){
+      setStatus($('gateStatus'), 'Fehler: ' + e.message, 'err');
+    }
+  }
+
+  gateBtn.addEventListener('click', unlockAudio);
+
+  testBtn.addEventListener('click', async ()=>{
+    const c = ensureCtx();
+    await c.resume();
+    // 1 kHz / 0.5 s bei moderater Lautstärke – gut hörbar, um die Kette zu prüfen
+    await playBurst(1000, 500, 0.2);
+  });
+
+  $('playSeq').addEventListener('click', async ()=>{
+    const freqs = $('freqs').value.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)&&n>0);
+    const dur = Math.max(10, parseInt($('duration').value)||150);
+    const gap = Math.max(0, parseInt($('gap').value)||120);
+    const vol = Math.min(1, Math.max(0, parseFloat($('gain').value)||0.2));
+    const reps = Math.max(1, parseInt($('repeats').value)||1);
+    if (!freqs.length){ setStatus($('status'),'Keine Frequenzen angegeben','err'); return; }
+    await playSequence(freqs, dur, gap, vol, reps);
   });
 
   $('playTone').addEventListener('click', ()=>{
-    const freqs = $('freqs').value.split(',').map(s=>parseFloat(s.trim())).filter(Boolean);
-    const gain = Math.min(1, Math.max(0, parseFloat($('gain').value) || 0.25));
-    if (!freqs.length) { status('Keine Frequenzen eingegeben'); return; }
-    playContinuous(freqs[0], gain);
+    const freqs = $('freqs').value.split(',').map(s=>parseFloat(s.trim())).filter(n=>!isNaN(n)&&n>0);
+    if (!freqs.length){ setStatus($('status'),'Keine Frequenzen angegeben','err'); return; }
+    const vol = Math.min(1, Math.max(0, parseFloat($('gain').value)||0.2));
+    playContinuous(freqs[0], vol);
   });
 
   $('stop').addEventListener('click', stopAll);
 
-  // Keyboard shortcut: Space = stop
-  window.addEventListener('keydown', (e)=>{ if (e.code === 'Space') { e.preventDefault(); stopAll(); } });
+  // Defensive: Jede Interaktion versucht erneut zu resumen (iOS Safari Eigenheiten)
+  ['touchstart','pointerdown'].forEach(ev=>{
+    window.addEventListener(ev, ()=>{ if (ctx && ctx.state === 'suspended') ctx.resume(); }, {passive:true});
+  });
 
 })();
 </script>
